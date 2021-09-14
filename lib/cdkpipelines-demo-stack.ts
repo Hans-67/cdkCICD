@@ -13,7 +13,7 @@ import { CfnOutput } from '@aws-cdk/core';
 
 
 
-export class LinebotStack extends cdk.Stack {
+export class CdkpipelinesDemoStack extends cdk.Stack {
   public readonly urlOutput: CfnOutput;
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);

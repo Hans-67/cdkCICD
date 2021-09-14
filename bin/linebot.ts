@@ -5,6 +5,7 @@ import { LinebotStack } from '../lib/linebot-stack';
 
 const app = new cdk.App();
 new LinebotStack(app, 'LinebotStack', {
+  env: { account: '994467015219', region: 'ap-northeast-1' },
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
