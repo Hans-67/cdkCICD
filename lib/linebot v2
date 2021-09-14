@@ -1,0 +1,48 @@
+import json
+import os
+import urllib.request
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+LINE_CHANNEL_ACCESS_TOKEN   = 'WTA/M6k9GlVPUH/yl4Qs0UHUBwOpYeyTkr4hAQojrvmvzQv5cNQBgsSjLpmuGLUQeAhcELZ90NFLzukHJBws1Z4l8nnr0CRaLzm0OlaC1q+Geszr1FMX0OqhvipglmWxehH9qZzCl9yoIepTfPS1RgdB04t89/1O/w1cDnyilFU='
+
+REQUEST_URL = 'https://api.line.me/v2/bot/message/reply'
+REQUEST_METHOD = 'POST'
+REQUEST_HEADERS = {
+    'Authorization': 'Bearer ' + LINE_CHANNEL_ACCESS_TOKEN,
+    'Content-Type': 'application/json'
+}
+
+def reply_func(event,message):
+    REQUEST_MESSAGE = [
+        {
+            'type': 'text',
+            'text': message
+        }
+    ]
+    params = {
+        'replyToken': json.loads(event['body'])['events'][0]['replyToken'],
+        'messages': REQUEST_MESSAGE
+    }
+    request = urllib.request.Request(
+        REQUEST_URL, 
+        json.dumps(params).encode('utf-8'), 
+        method=REQUEST_METHOD, 
+        headers=REQUEST_HEADERS
+    )
+    response = urllib.request.urlopen(request, timeout=50)
+    
+
+
+def lambda_handler(event, context):
+    logger.info(event)
+    testurl = "http://dihui.twkd56.net/index.php/user/OrderSecond/logistics_list_comprehensive?logistics_sn={ser_num}".format(ser_num = json.loads(event["body"])["events"][0]["message"]["text"])
+    
+    with urllib.request.urlopen(testurl) as url:
+        data = json.loads(url.read().decode())
+        if data['data'] == []:
+            reply_func(event,'NotFound')
+        else : 
+            reply_func(event,str(data['data']))
+    return {'statusCode': 200, 'body': 'OK'}
