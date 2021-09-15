@@ -23,7 +23,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
          commands: [
            'npm ci',
            'npm run build',
-           'cdk synth'
+           'npx cdk synth'
          ],
        }),
     });
