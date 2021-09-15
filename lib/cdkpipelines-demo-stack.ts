@@ -21,7 +21,8 @@ export class CdkpipelinesDemoStack extends cdk.Stack {
     const main = new lambda.Function(this, "lambda", {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: "index.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname,'..',"lambda")),
+      //code: lambda.Code.fromAsset(path.join(__dirname,'..',"lambda")),
+      code: lambda.Code.fromAsset("lambda"),
     });
     // The code that defines your stack goes here
      const gw = new apigw.LambdaRestApi(this, 'Endpoint', {
