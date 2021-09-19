@@ -10,7 +10,7 @@ import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as apigw from '@aws-cdk/aws-apigateway';
 import { CfnOutput } from '@aws-cdk/core';
-
+import * as ssm from '@aws-cdk/aws-ssm';
 
 
 export class CdkpipelinesDemoStack extends cdk.Stack {
@@ -28,6 +28,15 @@ export class CdkpipelinesDemoStack extends cdk.Stack {
      const gw = new apigw.LambdaRestApi(this, 'Endpoint', {
       handler: main
     });
+    
+    
+    
+    new ssm.StringParameter(this, 'BucketObjectNameSSM',{
+        description: "testBucketSSM Artifact Object Name", //Information about the parameter that you want to add to the system.
+        parameterName: "/cdkpipelinesdemopipeline-pipelineartifactsbucketa-13x8vsv6q9u7v/test",
+        stringValue: "MyServicePi"
+    });
+    
     
     this.urlOutput = new CfnOutput(this, 'Url', {
       value: gw.url,

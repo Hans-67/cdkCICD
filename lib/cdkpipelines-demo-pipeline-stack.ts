@@ -1,6 +1,7 @@
 import { Construct, SecretValue, Stack, StackProps } from '@aws-cdk/core';
 import { CodePipeline, CodePipelineSource, ShellStep } from "@aws-cdk/pipelines";
 import { CdkpipelinesDemoStage } from './cdkpipelines-demo-stage';
+import * as ssm from '@aws-cdk/aws-ssm';
 //import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
@@ -33,5 +34,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     pipeline.addStage(new CdkpipelinesDemoStage(this, 'Prod', {
       env: { account: '994467015219', region: 'ap-northeast-1' }
     }));
+    
+   
   }
 }
