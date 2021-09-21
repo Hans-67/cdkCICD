@@ -35,6 +35,30 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       env: { account: '994467015219', region: 'ap-northeast-1' }
     }));
     
+    
+    const testSSM = new ssm.StringParameter(this, 'BucketObjectNameSSM', {
+      description: "Artifact Object Name",
+      parameterName: "pipelineARN",
+      stringValue: "arn:aws:codepipeline:ap-northeast-1:994467015219:MyServicePipeline",
+    });
+    
+    const testSSM1 = new ssm.StringParameter(this, 'preBucket', {
+      description: "Artifact Object Name",
+      parameterName: "preBucket",
+      stringValue: "s3://cdkpipelinesdemopipeline-pipelineartifactsbucketa-1ol973x27pexc/",
+    });
+    
+    const testSSM2 = new ssm.StringParameter(this, 'objectNameSSM', {
+      description: "Artifact Object Name",
+      parameterName: "objectName",
+      stringValue: "MyServicePipeline",
+    });
+    
+    const testSSM3 = new ssm.StringParameter(this, 'fileSSM', {
+      description: "Artifact Object Name",
+      parameterName: "filePathName",
+      stringValue: "s3://simpleappstack-mysimpleappbucket6b59014a-qzw3guyqvx1n/cdk-trigger.txt",
+    });
    
   }
 }

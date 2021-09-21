@@ -31,11 +31,11 @@ export class CdkpipelinesDemoStack extends cdk.Stack {
     
     
     
-    new ssm.StringParameter(this, 'BucketObjectNameSSM',{
-        description: "testBucketSSM Artifact Object Name", //Information about the parameter that you want to add to the system.
-        parameterName: "/cdkpipelinesdemopipeline-pipelineartifactsbucketa-13x8vsv6q9u7v/test",
-        stringValue: "MyServicePi"
-    });
+    // const testSSM = new ssm.StringParameter(this, 'BucketObjectNameSSM', {
+    //   description: "Artifact Object Name",
+    //   parameterName: "/PreArtifact/object-name",
+    //   stringValue: "test",
+    // });
     
     
     this.urlOutput = new CfnOutput(this, 'Url', {
