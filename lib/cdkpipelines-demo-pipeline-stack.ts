@@ -1,7 +1,10 @@
 import { Construct, SecretValue, Stack, StackProps } from '@aws-cdk/core';
 import { CodePipeline, CodePipelineSource, ShellStep } from "@aws-cdk/pipelines";
+import * as cp from "@aws-cdk/aws-codepipeline";
 import { CdkpipelinesDemoStage } from './cdkpipelines-demo-stage';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 //import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
@@ -10,10 +13,24 @@ import * as ssm from '@aws-cdk/aws-ssm';
 export class CdkpipelinesDemoPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-
+    
+    // 由於要使用aws 原生的pipeline 裡面需要帶參數artifactBucket 因此建立此bucket
+    const bucket = new s3.Bucket(this,'MySimpleAppBucket',{
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    
+    // 因為cdk 提供的 pipeline 在建立deploy時會有問題，所以這邊先建立一個空的 原生的aws pipeline 
+    const codePipeline = new cp.Pipeline(this, 'CDKPipeline', {
+      artifactBucket: bucket
+    })
+    
+    // 使用cdk CodePipeline 時，將前面建立的空的aws pipeline 放到這邊，因為已經有自訂，所以不需要原來提供的pipelineName: 'MyServicePipeline'
     const pipeline = new CodePipeline(this, 'Pipeline', {
       // The pipeline name
-      pipelineName: 'MyServicePipeline',
+      codePipeline,
+      //pipelineName: 'MyServicePipeline',
 
        // How it will be built and synthesized
        synth: new ShellStep('Synth', {
@@ -29,36 +46,29 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
        }),
     });
 
+
+
+
+    
     // This is where we add the application stages
-    // ...
     pipeline.addStage(new CdkpipelinesDemoStage(this, 'Prod', {
       env: { account: '994467015219', region: 'ap-northeast-1' }
     }));
     
     
-    const testSSM = new ssm.StringParameter(this, 'BucketObjectNameSSM', {
-      description: "Artifact Object Name",
+    // 如果要export pipeline 需要使用codepipeline property is pipelineArn
+    const pipelineArn = new ssm.StringParameter(this, 'pipelineArnSSM', {
+      description: "pipeline's ARN",
       parameterName: "pipelineARN",
-      stringValue: "arn:aws:codepipeline:ap-northeast-1:994467015219:MyServicePipeline",
+      stringValue: codePipeline.pipelineArn,
     });
     
-    const testSSM1 = new ssm.StringParameter(this, 'preBucket', {
-      description: "Artifact Object Name",
-      parameterName: "preBucket",
-      stringValue: "s3://cdkpipelinesdemopipeline-pipelineartifactsbucketa-1ol973x27pexc/",
-    });
-    
-    const testSSM2 = new ssm.StringParameter(this, 'objectNameSSM', {
-      description: "Artifact Object Name",
-      parameterName: "objectName",
-      stringValue: "MyServicePipeline",
-    });
-    
-    const testSSM3 = new ssm.StringParameter(this, 'fileSSM', {
-      description: "Artifact Object Name",
-      parameterName: "filePathName",
-      stringValue: "s3://simpleappstack-mysimpleappbucket6b59014a-qzw3guyqvx1n/cdk-trigger.txt",
-    });
    
+    // 這邊是為了將 檔案被更新的bucket export到SSM，但實際上在這邊並沒有產生此bucket
+    const bucketName = new ssm.StringParameter(this, 'BucketNameSSM', {
+      description: "Bucket Name",
+      parameterName: "BucketName",
+      stringValue: "simpleappstack-mysimpleappbucket6b59014a-qzw3guyqvx1n",
+    });
   }
 }
